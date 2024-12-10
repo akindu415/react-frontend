@@ -24,4 +24,4 @@ function TicketPoolStatus(){
     );
 }
 
-export default TicketPoolStatus
+export default TicketPoolStatus;
