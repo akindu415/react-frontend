@@ -6,13 +6,13 @@ function ConfigForm() {
 
     //state to store form data
     const [formData, setFormData] = useState({
-        totalTickets: 0,
-        ticketReleaserate: 0,
-        ticketsPerRelease: 0,
-        customerRetrievalRate: 0,
-        maxTicketCapacity: 0,
-        numberOfVendors: 0,
-        numberOfCustomers: 0,
+        totalTickets: '',
+        ticketReleaserate: '',
+        ticketsPerRelease: '',
+        customerRetrievalRate: '',
+        maxTicketCapacity: '',
+        numberOfVendors: '',
+        numberOfCustomers: '',
   });
 
   // Handle input changes: update the corresponding state
@@ -24,15 +24,33 @@ function ConfigForm() {
     }));
   };
 
-  //for now, just log the data and navigate to next page when submitted
-  const handleSUbmit = (e: React.FormEvent) => {
+  //when the form is sumbitted handlesubmit runs
+  //it sends an post request to the backend with the form data
+  const handleSUbmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('configuration Submitted:', formData);
-    navigate('/status');
-  };
+
+    const response = await fetch('http://localhost:8080/api/config', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if(response.ok){
+      const savedConfig = await response.json();
+      console.log('config saved:', savedConfig);
+    
+
+    //navigate to status page
+      navigate('/status');
+  }else{
+    console.error('failed to save config');
+  }
+};
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '20px'}}>
       <h1>System Configuration</h1>
       <form onSubmit={handleSUbmit}>
         <div>
@@ -44,15 +62,17 @@ function ConfigForm() {
             onChange={handleChange}
           />
         </div>
+
         <div>
           <label>Ticket Release Rate (ms): </label>
           <input
             type="number"
-            name="ticketReleaseRate"
+            name="ticketReleaserate"
             value={formData.ticketReleaserate}
             onChange={handleChange}
           />
         </div>
+
         <div>
           <label>Tickets Per Release: </label>
           <input
@@ -62,15 +82,7 @@ function ConfigForm() {
             onChange={handleChange}
           />
         </div>
-        <div>
-          <label>Customer Retrieval Rate (ms): </label>
-          <input
-            type="number"
-            name="customerRetrievalRate"
-            value={formData.customerRetrievalRate}
-            onChange={handleChange}
-          />
-        </div>
+        
         <div>
           <label>Max Ticket Capacity: </label>
           <input
@@ -80,6 +92,17 @@ function ConfigForm() {
             onChange={handleChange}
           />
         </div>
+
+        <div>
+          <label>Customer Retrieval Rate (ms): </label>
+          <input
+            type="number"
+            name="customerRetrievalRate"
+            value={formData.customerRetrievalRate}
+            onChange={handleChange}
+          />
+        </div>
+
         <div>
           <label>Number of Vendors: </label>
           <input
@@ -89,6 +112,7 @@ function ConfigForm() {
             onChange={handleChange}
           />
         </div>
+
         <div>
           <label>Number of Customers: </label>
           <input
@@ -98,6 +122,7 @@ function ConfigForm() {
             onChange={handleChange}
           />
         </div>
+
         <button type="submit" style={{ marginTop: '10px' }}>Start</button>
       </form>
     </div>
